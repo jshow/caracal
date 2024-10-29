@@ -22,6 +22,7 @@ module Caracal
         const_set(:DEFAULT_IMAGE_BOTTOM,  8)        # units in pixels. 
         const_set(:DEFAULT_IMAGE_LEFT,    8)        # units in pixels. 
         const_set(:DEFAULT_IMAGE_RIGHT,   8)        # units in pixels. 
+        const_set(:DEFAULT_WRAP_TEXT,     '')       # no text wrapping
         
         # accessors
         attr_reader :image_url
@@ -34,7 +35,7 @@ module Caracal
         attr_reader :image_bottom
         attr_reader :image_left
         attr_reader :image_right
-        
+        attr_reader :image_wrap_text
         
         # initialization
         def initialize(options={}, &block)
@@ -46,6 +47,7 @@ module Caracal
           @image_bottom = DEFAULT_IMAGE_BOTTOM
           @image_left   = DEFAULT_IMAGE_LEFT
           @image_right  = DEFAULT_IMAGE_RIGHT
+          @image_wrap_text  = DEFAULT_WRAP_TEXT
           
           super options, &block
         end
@@ -70,6 +72,10 @@ module Caracal
             pixels_to_emus(value, 72)
           end
         end
+
+        def formatted_wrap_text
+          send('image_wrap_text')
+        end
         
         def relationship_target
           image_url || image_data
@@ -86,12 +92,12 @@ module Caracal
         end
         
         # strings
-        [:data, :url].each do |m|
+        [:data, :url, :wrap_text].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@image_#{ m }", value.to_s)
           end
         end
-        
+
         # symbols
         [:align].each do |m|
           define_method "#{ m }" do |value|
@@ -115,7 +121,8 @@ module Caracal
         private
         
         def option_keys
-          [:url, :width, :height, :align, :top, :bottom, :left, :right]
+          #[:url, :width, :height, :align, :top, :bottom, :left, :right, :wrap_text]
+          [:url, :width, :height, :align, :top, :bottom, :left, :right, :wrap_text]
         end
         
         def pixels_to_emus(value, ppi)
