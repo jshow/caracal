@@ -149,49 +149,109 @@ module Caracal
         rel_id   = rel.relationship_id
         rel_name = rel.formatted_target
 
-        xml['w'].p paragraph_options do
-          xml['w'].pPr do
-            xml['w'].spacing({ 'w:lineRule' => 'auto', 'w:line' => ds.style_line })
-            xml['w'].contextualSpacing({ 'w:val' => '0' })
-            xml['w'].jc({ 'w:val' => model.image_align.to_s })
-            xml['w'].rPr
-          end
-          xml['w'].r run_options do
-            xml['w'].drawing do
-              xml['wp'].inline({ distR: model.formatted_right, distT: model.formatted_top, distB: model.formatted_bottom, distL: model.formatted_left }) do
-                xml['wp'].extent({ cx: model.formatted_width, cy: model.formatted_height })
-                xml['wp'].effectExtent({ t: 0, b: 0, r: 0, l: 0 })
-                xml['wp'].docPr({ id: rel_id, name: rel_name })
-                xml['a'].graphic do
-                  xml['a'].graphicData({ uri: 'http://schemas.openxmlformats.org/drawingml/2006/picture' }) do
-                    xml['pic'].pic do
-                      xml['pic'].nvPicPr do
-                        xml['pic'].cNvPr({ id: rel_id, name: rel_name })
-                        xml['pic'].cNvPicPr
-                      end
-                      xml['pic'].blipFill do
-                        xml['a'].blip({ 'r:embed' => rel.formatted_id })
-                        xml['a'].srcRect
-                        xml['a'].stretch do
-                          xml['a'].fillRect
+        if model.formatted_wrap_text.present?
+          xml['w'].p paragraph_options do
+            xml['w'].pPr do
+              xml['w'].spacing({ 'w:lineRule' => 'auto', 'w:line' => ds.style_line })
+              xml['w'].contextualSpacing({ 'w:val' => '0' })
+              xml['w'].jc({ 'w:val' => model.image_align.to_s })
+              xml['w'].rPr
+            end
+            xml['w'].r run_options do
+              xml['w'].drawing do
+                xml['wp'].anchor({ simplePos: 0, distR: model.formatted_right, distT: model.formatted_top, distB: model.formatted_bottom, distL: model.formatted_left, behindDoc: 0, locked: 0, layoutInCell: 1, allowOverlap: 1, relativeHeight: model.formatted_height}) do
+                  xml['wp'].simplePos({ x: 0, y: 0 })
+                  xml['wp'].positionH({ relativeFrom: 'column' }) do
+                    xml['wp'].posOffset 0
+                  end
+                  xml['wp'].positionV({ relativeFrom: 'paragraph' }) do
+                    xml['wp'].posOffset 0
+                  end
+                  xml['wp'].extent({ cx: model.formatted_width, cy: model.formatted_height })
+                  xml['wp'].effectExtent({ t: 0, b: 0, r: 0, l: 0 })
+                  xml['wp'].wrapSquare({ wrapText: model.formatted_wrap_text })
+                  xml['wp'].docPr({ id: rel_id, name: rel_name })
+                  xml['wp'].cNvGraphicFramePr do
+                    xml['a'].graphicFrameLocks({ 'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main', noChangeAspect: '1'})
+                  end
+                  xml['a'].graphic do
+                    xml['a'].graphicData({ uri: 'http://schemas.openxmlformats.org/drawingml/2006/picture' }) do
+                      xml['pic'].pic do
+                        xml['pic'].nvPicPr do
+                          xml['pic'].cNvPr({ id: rel_id, name: rel_name })
+                          xml['pic'].cNvPicPr
                         end
-                      end
-                      xml['pic'].spPr do
-                        xml['a'].xfrm do
-                          xml['a'].ext({ cx: model.formatted_width, cy: model.formatted_height })
+                        xml['pic'].blipFill do
+                          xml['a'].blip({ 'r:embed' => rel.formatted_id })
+                          xml['a'].srcRect
+                          xml['a'].stretch do
+                            xml['a'].fillRect
+                          end
                         end
-                        xml['a'].prstGeom({ prst: 'rect' })
-                        xml['a'].ln
+                        xml['pic'].spPr do
+                          xml['a'].xfrm do
+                            xml['a'].ext({ cx: model.formatted_width, cy: model.formatted_height })
+                          end
+                          xml['a'].prstGeom({ prst: 'rect' })
+                          xml['a'].ln
+                        end
                       end
                     end
                   end
                 end
               end
             end
+            xml['w'].r run_options do
+              xml['w'].rPr do
+                xml['w'].rtl({ 'w:val' => '0' })
+              end
+            end
           end
-          xml['w'].r run_options do
-            xml['w'].rPr do
-              xml['w'].rtl({ 'w:val' => '0' })
+        else
+          xml['w'].p paragraph_options do
+            xml['w'].pPr do
+              xml['w'].spacing({ 'w:lineRule' => 'auto', 'w:line' => ds.style_line })
+              xml['w'].contextualSpacing({ 'w:val' => '0' })
+              xml['w'].jc({ 'w:val' => model.image_align.to_s })
+              xml['w'].rPr
+            end
+            xml['w'].r run_options do
+              xml['w'].drawing do
+                xml['wp'].inline({ distR: model.formatted_right, distT: model.formatted_top, distB: model.formatted_bottom, distL: model.formatted_left }) do
+                  xml['wp'].extent({ cx: model.formatted_width, cy: model.formatted_height })
+                  xml['wp'].effectExtent({ t: 0, b: 0, r: 0, l: 0 })
+                  xml['wp'].docPr({ id: rel_id, name: rel_name })
+                  xml['a'].graphic do
+                    xml['a'].graphicData({ uri: 'http://schemas.openxmlformats.org/drawingml/2006/picture' }) do
+                      xml['pic'].pic do
+                        xml['pic'].nvPicPr do
+                          xml['pic'].cNvPr({ id: rel_id, name: rel_name })
+                          xml['pic'].cNvPicPr
+                        end
+                        xml['pic'].blipFill do
+                          xml['a'].blip({ 'r:embed' => rel.formatted_id })
+                          xml['a'].srcRect
+                          xml['a'].stretch do
+                            xml['a'].fillRect
+                          end
+                        end
+                        xml['pic'].spPr do
+                          xml['a'].xfrm do
+                            xml['a'].ext({ cx: model.formatted_width, cy: model.formatted_height })
+                          end
+                          xml['a'].prstGeom({ prst: 'rect' })
+                          xml['a'].ln
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            xml['w'].r run_options do
+              xml['w'].rPr do
+                xml['w'].rtl({ 'w:val' => '0' })
+              end
             end
           end
         end
